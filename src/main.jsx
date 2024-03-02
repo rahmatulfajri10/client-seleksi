@@ -21,8 +21,6 @@ const router = createBrowserRouter([
     path: "/login",
     element: <LoginPage />,
   },
-  ss
-
   {
     path: "/participant",
     element: <DashboardParticipant />,
