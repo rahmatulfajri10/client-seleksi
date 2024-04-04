@@ -1,16 +1,16 @@
 import { Sidebar } from "flowbite-react";
 import {
-  HiArrowSmRight,
+  HiVideoCamera,
   HiChartPie,
-  HiInbox,
+  HiClipboardCheck,
   HiShoppingBag,
   HiLogout,
-  HiUser,
+  HiUsers,
 } from "react-icons/hi";
 import { useDispatch } from "react-redux";
 import { LogOut, reset } from "../../features/authslice";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 function SideBarDashboard() {
   const navigate = useNavigate();
@@ -21,41 +21,43 @@ function SideBarDashboard() {
     dispatch(reset());
     navigate("/login");
   };
+  const location = useLocation();
   return (
-    <Sidebar
-      className="border-r"
-      aria-label="Sidebar with multi-level dropdown example"
-    >
-      <Sidebar.Items>
-        <Sidebar.ItemGroup>
-          <Sidebar.Item href="#" icon={HiChartPie}>
-            Dashboard
-          </Sidebar.Item>
-          <Sidebar.Collapse icon={HiShoppingBag} label="E-commerce">
-            <Sidebar.Item href="#">Products</Sidebar.Item>
-            <Sidebar.Item href="#">Sales</Sidebar.Item>
-            <Sidebar.Item href="#">Refunds</Sidebar.Item>
-            <Sidebar.Item href="#">Shipping</Sidebar.Item>
-          </Sidebar.Collapse>
-          <Sidebar.Item href="#" icon={HiInbox}>
-            Inbox
-          </Sidebar.Item>
-          <Sidebar.Item href="#" icon={HiUser}>
-            Users
-          </Sidebar.Item>
-          <Sidebar.Item href="#" icon={HiShoppingBag}>
-            Products
-          </Sidebar.Item>
-          <Sidebar.Item
-            className=" hover:bg-red-200 hover:text-red-500"
-            icon={HiLogout}
-            onClick={logout}
-          >
-            Sign Out
-          </Sidebar.Item>
-        </Sidebar.ItemGroup>
-      </Sidebar.Items>
-    </Sidebar>
+    <div className="">
+      <Sidebar
+        className="border-r flex flex-col justify-between"
+        aria-label="Sidebar with multi-level dropdown example"
+      >
+        <Sidebar.Items className="min-h-screen">
+          <Sidebar.ItemGroup>
+            <Sidebar.Item href="#" icon={HiChartPie}>
+              Dashboard
+            </Sidebar.Item>
+            <Sidebar.Collapse href="#" icon={HiUsers} label="Users">
+              <Sidebar.Item href="/users">List User</Sidebar.Item>
+              <Sidebar.Item href="#">Create User</Sidebar.Item>
+              <Sidebar.Item href="#">Grup Peserta</Sidebar.Item>
+            </Sidebar.Collapse>
+            <Sidebar.Collapse icon={HiClipboardCheck} label="Ujian">
+              <Sidebar.Item href="#">List Ujian</Sidebar.Item>
+              <Sidebar.Item href="#">Tambah Ujian</Sidebar.Item>
+            </Sidebar.Collapse>
+
+            <Sidebar.Item href="/proctor" icon={HiVideoCamera}>
+              Proctor
+            </Sidebar.Item>
+
+            <Sidebar.Item
+              className=" hover:bg-red-200 hover:text-red-500 mt-auto"
+              icon={() => <HiLogout className="hover:text-red-500" />}
+              onClick={logout}
+            >
+              Sign Out
+            </Sidebar.Item>
+          </Sidebar.ItemGroup>
+        </Sidebar.Items>
+      </Sidebar>
+    </div>
   );
 }
 

@@ -6,9 +6,11 @@ const DashboardLayout = (props) => {
   return (
     <>
       <NavbarParticipant />
-      <div className="flex">
-        <SideBarDashboard />
-        {children}
+      <div className="flex flex-row">
+        <div className="w-64 flex-none">
+          <SideBarDashboard />
+        </div>
+        <div className="flex-grow">{children}</div>
       </div>
     </>
   );

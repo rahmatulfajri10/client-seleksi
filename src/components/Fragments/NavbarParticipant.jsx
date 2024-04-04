@@ -14,11 +14,15 @@ import { useDispatch } from "react-redux";
 import { LogOut, getMe, reset } from "../../features/authslice";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { config } from "../../configs";
+import logo from "../../assets/logo-unhan.png";
 
 function NavbarParticipant() {
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  let data = {};
   useEffect(() => {
     const timerID = setInterval(() => tick(), 1000);
     return () => clearInterval(timerID);
@@ -34,9 +38,11 @@ function NavbarParticipant() {
     dispatch(reset());
     navigate("/login");
   };
+
   return (
     <Navbar fluid rounded className="border-b">
-      <NavbarBrand href="">
+      <NavbarBrand href="" className="">
+        <img src={logo} alt="" className="h-10 mr-3" />
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
           Sistem Ujian Online Unhan RI
         </span>
@@ -48,7 +54,7 @@ function NavbarParticipant() {
           label={
             <Avatar
               alt="User settings"
-              img="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+              img="../../../public/user.png"
               rounded
             />
           }
@@ -65,7 +71,18 @@ function NavbarParticipant() {
         <NavbarToggle />
       </div>
       <NavbarCollapse>
-        <div>{currentDateTime.toLocaleString()}</div>
+        <div>
+          {`${currentDateTime.toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })} Pukul ${currentDateTime.toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+          })}`}
+        </div>
       </NavbarCollapse>
     </Navbar>
   );

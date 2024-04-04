@@ -9,7 +9,10 @@ import DashboardParticipant from "./pages/ParticipantPage/DashboardPage/index.js
 import FormParticipant from "./pages/ParticipantPage/FormParticipant/index.jsx";
 import QuizPage from "./pages/ParticipantPage/QuizPage/index.jsx";
 import { Provider } from "react-redux";
-import { store } from "./app/store.jsx";
+import { persistor, store } from "./app/store.jsx";
+import { PersistGate } from "redux-persist/integration/react";
+import ProctorPage from "./pages/DashboardPage/ProctorPage/index.jsx";
+import ListUserPage from "./pages/DashboardPage/UsersPage/ListUserPage/index.jsx";
 
 const router = createBrowserRouter([
   {
@@ -30,15 +33,25 @@ const router = createBrowserRouter([
     element: <FormParticipant />,
   },
   {
-    path: "/quiz",
+    path: "/quiz/:kd_soal",
     element: <QuizPage />,
+  },
+  {
+    path: "/proctor",
+    element: <ProctorPage />,
+  },
+  {
+    path: "/users",
+    element: <ListUserPage />,
   },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>
-      <RouterProvider router={router} />
+      <PersistGate loading={null} persistor={persistor}>
+        <RouterProvider router={router} />
+      </PersistGate>
     </Provider>
   </React.StrictMode>
 );

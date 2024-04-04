@@ -1,9 +1,10 @@
 import { Avatar, Dropdown, Navbar } from "flowbite-react";
-
+import logo from "../../assets/logo-unhan.png";
 function NavbarDashboard() {
   return (
     <Navbar className="border-b" fluid rounded>
       <Navbar.Brand href="/dashboard">
+        <img src={logo} alt="" />
         <span className="self-center whitespace-nowrap text-xl font-semibold text-black">
           Sistem Ujian Unhan RI
         </span>
