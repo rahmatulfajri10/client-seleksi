@@ -13,6 +13,12 @@ import { persistor, store } from "./app/store.jsx";
 import { PersistGate } from "redux-persist/integration/react";
 import ProctorPage from "./pages/DashboardPage/ProctorPage/index.jsx";
 import ListUserPage from "./pages/DashboardPage/UsersPage/ListUserPage/index.jsx";
+import FormUserAdd from "./pages/DashboardPage/UsersPage/CreateUserPage/index";
+import CreateBulkUserPage from "./pages/DashboardPage/UsersPage/CreateBulkUserPage/index.jsx";
+import ListUjianPage from "./pages/DashboardPage/UjianPage/ListUjianPage/index.jsx";
+import CreateUjianPage from "./pages/DashboardPage/UjianPage/CreateUjianPage/index.jsx";
+import DBoardPage from "./pages/DashboardPage/DBoardPage/index.jsx";
+import ResultPage from "./pages/DashboardPage/ResultPage/index.jsx";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +49,26 @@ const router = createBrowserRouter([
   {
     path: "/users",
     element: <ListUserPage />,
+  },
+  {
+    path: "/add-user",
+    element: <FormUserAdd />,
+  },
+  {
+    path: "/bulk-add-user",
+    element: <CreateBulkUserPage />,
+  },
+  {
+    path: "/ujian",
+    element: <ListUjianPage />,
+  },
+  {
+    path: "/add-ujian",
+    element: <CreateUjianPage />,
+  },
+  {
+    path: "/result",
+    element: <ResultPage />,
   },
 ]);
 

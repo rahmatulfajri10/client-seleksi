@@ -74,7 +74,18 @@ const QuizFrag = () => {
         }
       );
 
-      console.log(response);
+      await axios.post(
+        `${config.api_host_dev}/api/v1/cms/result`,
+        {
+          id_user: user.id,
+          kd_soal: kd_soal,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
     } catch (error) {
       console.error("Error:", error);
     } finally {

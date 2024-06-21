@@ -3,7 +3,7 @@ import {
   HiVideoCamera,
   HiChartPie,
   HiClipboardCheck,
-  HiShoppingBag,
+  HiChartBar,
   HiLogout,
   HiUsers,
 } from "react-icons/hi";
@@ -30,19 +30,23 @@ function SideBarDashboard() {
       >
         <Sidebar.Items className="min-h-screen">
           <Sidebar.ItemGroup>
-            <Sidebar.Item href="#" icon={HiChartPie}>
+            <Sidebar.Item href="/" icon={HiChartPie}>
               Dashboard
             </Sidebar.Item>
             <Sidebar.Collapse href="#" icon={HiUsers} label="Users">
               <Sidebar.Item href="/users">List User</Sidebar.Item>
-              <Sidebar.Item href="#">Create User</Sidebar.Item>
-              <Sidebar.Item href="#">Grup Peserta</Sidebar.Item>
+              <Sidebar.Item href="/add-user">Create One User</Sidebar.Item>
+              <Sidebar.Item href="/bulk-add-user">
+                Create Many Users
+              </Sidebar.Item>
             </Sidebar.Collapse>
             <Sidebar.Collapse icon={HiClipboardCheck} label="Ujian">
-              <Sidebar.Item href="#">List Ujian</Sidebar.Item>
-              <Sidebar.Item href="#">Tambah Ujian</Sidebar.Item>
+              <Sidebar.Item href="/ujian">List Ujian</Sidebar.Item>
+              <Sidebar.Item href="/add-ujian">Tambah Ujian</Sidebar.Item>
             </Sidebar.Collapse>
-
+            <Sidebar.Item href="/result" icon={HiChartBar}>
+              Result
+            </Sidebar.Item>
             <Sidebar.Item href="/proctor" icon={HiVideoCamera}>
               Proctor
             </Sidebar.Item>

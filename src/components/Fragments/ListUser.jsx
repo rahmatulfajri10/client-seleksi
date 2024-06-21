@@ -1,23 +1,36 @@
 import axios from "axios";
 import {
   Button,
-  Checkbox,
   Label,
   Modal,
   Select,
   Table,
   TextInput,
+  Dropdown,
 } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { config } from "../../configs";
+import { data } from "autoprefixer";
 
 const ListUserFragment = () => {
-  const [openModal, setOpenModal] = useState(false);
+  const [openModalAdd, setOpenModalAdd] = useState(false);
+  const [openModalDel, setOpenModalDel] = useState(false);
+  const [userData, setUserData] = useState({});
+  const [roles, setRoles] = useState([]);
+
   const [username, setUsername] = useState("");
-  const [data, setData] = useState({});
+  const [roleUser, setRoleUser] = useState("");
+  const [filteredRoleUser, setFilteredRoleUser] = useState("");
+
+  const [role, setRole] = useState("");
+  const [active, setActive] = useState(0);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+
+  const navigate = useNavigate();
+
   useEffect(() => {
-    const fetchExamData = async () => {
+    const fetchUserData = async () => {
       try {
         const response = await axios.get(
           `${config.api_host_dev}/api/v1/cms/user`,
@@ -28,32 +41,255 @@ const ListUserFragment = () => {
           }
         );
 
-        // Jika pengguna ditemukan, navigasikan ke /dashboard
         if (response) {
-          setData(response.data.data);
+          setUserData(response.data.data);
         }
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error fetching user data:", error);
       }
     };
-    fetchExamData();
+
+    const fetchRoles = async () => {
+      try {
+        const response = await axios.get(
+          `${config.api_host_dev}/api/v1/cms/role`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (response) {
+          setRoles(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      }
+    };
+
+    fetchUserData();
+    fetchRoles();
   }, []);
-  const handleEdit = (id) => {
-    console.log(id);
-    setOpenModal(true);
+
+  const handleAddRole = (id) => {
+    const selectedUser = userData.find((user) => user.id === id);
+    if (selectedUser) {
+      setUsername(selectedUser.username);
+      setRoleUser(selectedUser.role);
+      setActive(selectedUser.active === 1 ? true : false);
+      setSelectedUserId(id);
+      setOpenModalAdd(true);
+    }
   };
-  function onCloseModal() {
-    setOpenModal(false);
-    setEmail("");
-  }
+  useEffect(() => {
+    setFilteredRoleUser(
+      roles.filter((role) => roleUser.includes(role.ur_role))
+    );
+  }, [roles, roleUser]);
+  const handleDelRole = (id) => {
+    const selectedUser = userData.find((user) => user.id === id);
+    if (selectedUser) {
+      setUsername(selectedUser.username);
+      setRoleUser(selectedUser.role);
+      setActive(selectedUser.active === 1 ? true : false);
+      setSelectedUserId(id);
+
+      setOpenModalDel(true);
+    }
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await axios.post(
+        `${config.api_host_dev}/api/v1/cms/user/add-role/${selectedUserId}`,
+        {
+          role: role,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      alert("User status updated successfully");
+
+      const response = await axios.get(
+        `${config.api_host_dev}/api/v1/cms/user`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response) {
+        setUserData(response.data.data);
+      }
+
+      setOpenModalAdd(false);
+      setUsername("");
+      setPassword("");
+      setActive(false);
+      setRole("");
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
+  };
+
+  const handleDeleteRole = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await axios.delete(
+        `${config.api_host_dev}/api/v1/cms/user/del-role/${selectedUserId}`,
+        {
+          data: {
+            id_role: role,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      alert("User status updated successfully");
+      const response = await axios.get(
+        `${config.api_host_dev}/api/v1/cms/user`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response) {
+        setUserData(response.data.data);
+      }
+
+      setOpenModalDel(false);
+      setUsername("");
+      setPassword("");
+      setActive(false);
+      setRole("");
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`${config.api_host_dev}/api/v1/cms/user/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      alert("User deleted successfully");
+
+      const response = await axios.get(
+        `${config.api_host_dev}/api/v1/cms/user`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response) {
+        setUserData(response.data.data);
+      }
+    } catch (error) {
+      console.error("There was an error deleting the user!", error);
+    }
+  };
+
+  const handleStatusActive = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.patch(
+        `${config.api_host_dev}/api/v1/cms/user/status/${id}`,
+        {
+          active: 1,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("User status updated successfully");
+
+      const response = await axios.get(
+        `${config.api_host_dev}/api/v1/cms/user`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response) {
+        setUserData(response.data.data);
+      }
+    } catch (error) {
+      console.error("There was an error update the user!", error);
+    }
+  };
+  const handleStatusDeActive = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.patch(
+        `${config.api_host_dev}/api/v1/cms/user/status/${id}`,
+        {
+          active: 0,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("User status updated successfully");
+
+      const response = await axios.get(
+        `${config.api_host_dev}/api/v1/cms/user`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response) {
+        setUserData(response.data.data);
+      }
+    } catch (error) {
+      console.error("There was an error update the user!", error);
+    }
+  };
+
+  const onCloseModal = () => {
+    setOpenModalAdd(false);
+    setOpenModalDel(false);
+    setUsername("");
+    setRoleUser("");
+    setActive(false);
+    setRole("");
+  };
+
   return (
     <>
-      <Modal show={openModal} size="md" onClose={onCloseModal} popup>
+      <Modal show={openModalAdd} size="md" onClose={onCloseModal} popup>
         <Modal.Header />
         <Modal.Body>
           <div className="space-y-6">
             <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-              Edit Role User
+              Tambah Role User
             </h3>
             <div>
               <div className="mb-2 block">
@@ -62,40 +298,99 @@ const ListUserFragment = () => {
               <TextInput
                 id="username"
                 value={username}
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
             <div>
               <div className="mb-2 block">
-                <Label htmlFor="role" value="Role" />
+                <Label htmlFor="role" value="Role Saat Ini" />
               </div>
-              <div className="flex max-w-md flex-col gap-4" id="checkbox">
-                <div className="flex items-center gap-2">
-                  <Checkbox id="accept" />
-                  <Label htmlFor="accept" className="flex">
-                    I agree with the
-                  </Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox id="promotion" />
-                  <Label htmlFor="promotion">
-                    I want to get promotional offers
-                  </Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox id="age" />
-                  <Label htmlFor="age">I am 18 years or older</Label>
-                </div>
+              <TextInput id="role" value={roleUser} required />
+            </div>
+
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="role" value="Role yang ditambahkan" />
               </div>
+              <Select
+                id="role"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                required
+                className="p-2 border border-gray-300 rounded-md"
+              >
+                <option value="">Pilih Role</option>
+                {Array.isArray(roles) &&
+                  roles.map((role) => (
+                    <option key={role.id} value={role.ur_role}>
+                      {role.ur_role}
+                    </option>
+                  ))}
+              </Select>
             </div>
 
             <div className="w-full">
-              <Button>Save</Button>
+              <Button onClick={handleUpdate}>Tambah</Button>
             </div>
           </div>
         </Modal.Body>
       </Modal>
+      <Modal show={openModalDel} size="md" onClose={onCloseModal} popup>
+        <Modal.Header />
+        <Modal.Body>
+          <div className="space-y-6">
+            <h3 className="text-xl font-medium text-gray-900 dark:text-white">
+              Hapus Role User
+            </h3>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="username" value="Username" />
+              </div>
+              <TextInput
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="role" value="Role Saat Ini" />
+              </div>
+              <TextInput id="role" value={roleUser} required />
+            </div>
+
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="role" value="Role yang ditambahkan" />
+              </div>
+              <Select
+                id="role"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                required
+                className="p-2 border border-gray-300 rounded-md"
+              >
+                <option value="">Pilih Role</option>
+                {Array.isArray(filteredRoleUser) &&
+                  filteredRoleUser.map((role) => (
+                    <option key={role.id} value={role.id}>
+                      {role.ur_role}
+                    </option>
+                  ))}
+              </Select>
+            </div>
+
+            <div className="w-full">
+              <Button className="bg-red-600" onClick={handleDeleteRole}>
+                Delete
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
       <div className="w-[90%] m-10 mx-auto">
         <div className="flex justify-center mb-5">
           <h1 className="text-2xl font-bold">Manajemen User</h1>
@@ -106,13 +401,14 @@ const ListUserFragment = () => {
               <Table.HeadCell>Username</Table.HeadCell>
               <Table.HeadCell>Status</Table.HeadCell>
               <Table.HeadCell>Role</Table.HeadCell>
+              <Table.HeadCell>Edit</Table.HeadCell>
               <Table.HeadCell className="flex justify-center items-center">
-                <span className="">Edit</span>
+                <span className="">Delete</span>
               </Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
-              {Array.isArray(data) ? (
-                data.map((user) => (
+              {Array.isArray(userData) ? (
+                userData.map((user) => (
                   <Table.Row
                     key={user.id}
                     className="bg-white dark:border-gray-700 dark:bg-gray-800"
@@ -134,16 +430,34 @@ const ListUserFragment = () => {
                             .join(", ")
                         : user.role}
                     </Table.Cell>
+
+                    <Table.Cell>
+                      <Dropdown label="Edit" dismissOnClick={false}>
+                        <Dropdown.Item onClick={() => handleAddRole(user.id)}>
+                          Tambah Role
+                        </Dropdown.Item>
+                        <Dropdown.Item onClick={() => handleDelRole(user.id)}>
+                          Hapus Role
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          onClick={() => handleStatusActive(user.id)}
+                        >
+                          Aktifkan Status
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          onClick={() => handleStatusDeActive(user.id)}
+                        >
+                          Non Aktifkan Status
+                        </Dropdown.Item>
+                      </Dropdown>
+                    </Table.Cell>
                     <Table.Cell className="flex justify-center items-center">
                       <Button
-                        type="submit"
-                        className="mr-2"
-                        onClick={() => handleEdit(user.id)}
+                        type="button"
+                        className="bg-red-600 "
+                        onClick={() => handleDelete(user.id)}
                       >
-                        Role
-                      </Button>
-                      <Button type="submit" onClick={() => handleEdit(user.id)}>
-                        Status
+                        Delete
                       </Button>
                     </Table.Cell>
                   </Table.Row>
