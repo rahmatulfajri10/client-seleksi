@@ -36,7 +36,12 @@ const FormUser = () => {
     event.preventDefault();
     // Check if password and confirmPassword are the same
     if (password !== confirmPassword) {
-      alert("Password dan konfirmasi password tidak sama!");
+      Swal.fire({
+        title: "Error!",
+        text: "Password dan konfirmasi password tidak sama!",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
       return;
     }
     try {
@@ -70,11 +75,16 @@ const FormUser = () => {
           },
         }
       );
-
-      alert("User created successfully");
     } catch (error) {
       console.error("There was an error creating the user!", error);
       alert("Gagal membuat user, cobalah dengan mengganti username!");
+    } finally {
+      Swal.fire({
+        title: "Success!",
+        text: "Users created successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
     }
   };
 

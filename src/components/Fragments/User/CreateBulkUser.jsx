@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { config } from "../../../configs";
 import { FileInput, Label } from "flowbite-react";
+import Swal from "sweetalert2";
 
 const CreateBulkUser = () => {
   const [file, setFile] = useState(null);
@@ -30,7 +31,12 @@ const CreateBulkUser = () => {
         }
       );
 
-      alert("Users created successfully");
+      Swal.fire({
+        title: "Success!",
+        text: "Users created successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
     } catch (error) {
       console.error("There was an error creating the user!", error);
       alert("Gagal membuat user, cobalah dengan mengganti username!");

@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { config } from "../../configs";
 import { data } from "autoprefixer";
+import Swal from "sweetalert2";
 
 const ListUserFragment = () => {
   const [openModalAdd, setOpenModalAdd] = useState(false);
@@ -114,7 +115,12 @@ const ListUserFragment = () => {
           },
         }
       );
-      alert("User status updated successfully");
+      Swal.fire({
+        title: "Success!",
+        text: "User status updated successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
 
       const response = await axios.get(
         `${config.api_host_dev}/api/v1/cms/user`,
@@ -154,7 +160,12 @@ const ListUserFragment = () => {
           },
         }
       );
-      alert("User status updated successfully");
+      Swal.fire({
+        title: "Success!",
+        text: "User status updated successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
       const response = await axios.get(
         `${config.api_host_dev}/api/v1/cms/user`,
         {
@@ -179,31 +190,54 @@ const ListUserFragment = () => {
   };
 
   const handleDelete = async (id) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`${config.api_host_dev}/api/v1/cms/user/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      // Tambahkan async di sini
+      if (result.isConfirmed) {
+        try {
+          const token = localStorage.getItem("token");
+          // Tunggu sampai penghapusan selesai
+          await axios.delete(`${config.api_host_dev}/api/v1/cms/user/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
-      alert("User deleted successfully");
+          // Setelah penghapusan, muat ulang data
+          const response = await axios.get(
+            `${config.api_host_dev}/api/v1/cms/user`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
 
-      const response = await axios.get(
-        `${config.api_host_dev}/api/v1/cms/user`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          if (response) {
+            setUserData(response.data.data);
+            Swal.fire({
+              title: "Deleted!",
+              text: "Your user has been deleted.",
+              icon: "success",
+            });
+          }
+        } catch (error) {
+          console.error("There was an error deleting the user!", error);
+          Swal.fire({
+            title: "Error!",
+            text: "There was an error deleting the user!",
+            icon: "error",
+          });
         }
-      );
-
-      if (response) {
-        setUserData(response.data.data);
       }
-    } catch (error) {
-      console.error("There was an error deleting the user!", error);
-    }
+    });
   };
 
   const handleStatusActive = async (id) => {
@@ -221,7 +255,12 @@ const ListUserFragment = () => {
         }
       );
 
-      alert("User status updated successfully");
+      Swal.fire({
+        title: "Success!",
+        text: "User status updated successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
 
       const response = await axios.get(
         `${config.api_host_dev}/api/v1/cms/user`,
@@ -254,7 +293,12 @@ const ListUserFragment = () => {
         }
       );
 
-      alert("User status updated successfully");
+      Swal.fire({
+        title: "Success!",
+        text: "User status updated successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
 
       const response = await axios.get(
         `${config.api_host_dev}/api/v1/cms/user`,

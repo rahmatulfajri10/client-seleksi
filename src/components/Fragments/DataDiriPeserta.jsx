@@ -37,7 +37,7 @@ const DataDiriPeserta = () => {
   }, [user]);
   return (
     <>
-      <div className="border-4 border-solid border-black w-3/4 mt-10 mx-auto ">
+      <div className=" p-5 border-4 border-solid border-black w-3/4 mt-10 mx-auto ">
         <div className="flex justify-center my-5">
           <h1 className="text-2xl font-bold ">Data Diri Peserta</h1>
         </div>
@@ -50,7 +50,7 @@ const DataDiriPeserta = () => {
                   : "Loading..."
               }
               alt=""
-              className="h-max-screen object-cover "
+              className="h-max-screen object-cover  "
             />
           </div>
           <div className="m-5  col-span-3  grid items-center">
@@ -90,9 +90,9 @@ const DataDiriPeserta = () => {
             </div>
           </div>
         </div>
-        <div className="grid justify-end m-5">
+        {/* <div className="grid justify-end m-5">
           <Button>Edit</Button>
-        </div>
+        </div> */}
       </div>
     </>
   );

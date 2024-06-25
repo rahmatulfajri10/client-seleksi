@@ -18,6 +18,7 @@ export default function GuardRoute({ children }) {
     if (isError) {
       navigate("/login");
     }
+
     if (user && user.role.includes(5)) {
       navigate("/participant");
     }

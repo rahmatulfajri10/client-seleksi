@@ -8,7 +8,7 @@ import { useEffect } from "react";
 export default function GuardRouteParticipant({ children }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isError } = useSelector((state) => state.auth);
+  const { isError, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(getMe());
@@ -18,6 +18,9 @@ export default function GuardRouteParticipant({ children }) {
     if (isError) {
       navigate("/login");
     }
-  }, [isError, navigate]);
+    if (user && !user.role.includes(5)) {
+      navigate("/");
+    }
+  }, [isError, user]);
   return children || <Outlet />;
 }
