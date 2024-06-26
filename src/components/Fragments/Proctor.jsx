@@ -7,10 +7,9 @@ import { format } from "date-fns";
 
 const ProctorFragment = () => {
   const [proctorData, setProctorData] = useState([]);
-  const [url, setUrl] = useState("");
   const [isOpenModal, setOpenModal] = useState(false);
   const [proctorById, setProctorById] = useState([]);
-
+  const [pilihan, setPilihan] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -47,18 +46,17 @@ const ProctorFragment = () => {
     }
   };
 
-  const openModal = async (url, id_user, z) => {
+  const openModal = async (id_user, z) => {
     await fetchProctorId(id_user);
-
-    setUrl(url);
+    setPilihan(z);
     setOpenModal(true);
   };
 
   // Fungsi untuk menutup modal
   const closeModal = () => {
-    setUrl("");
     setOpenModal(false);
     setProctorById([]);
+    setItem("");
   };
   return (
     <>
@@ -79,8 +77,10 @@ const ProctorFragment = () => {
                       WIB
                     </div>
                     <img
-                      src={`${config.api_foto_dev}/${item.kamera}`}
-                      alt="Camera"
+                      src={`${config.api_foto_dev}/${
+                        pilihan === 0 ? item.kamera : item.screen
+                      }`}
+                      alt={pilihan === 0 ? "Camera" : "Screen"}
                       className="object-cover"
                     />
                   </div>
@@ -124,26 +124,14 @@ const ProctorFragment = () => {
                     src={`${config.api_foto_dev}/${item.kamera}`}
                     alt={`Kamera `}
                     className="mb-4 cursor-pointer"
-                    onClick={() =>
-                      openModal(
-                        `${config.api_foto_dev}/${item.kamera}`,
-                        item.id_user,
-                        0
-                      )
-                    }
+                    onClick={() => openModal(item.id_user, 0)}
                   />
                   <p className="text-center">Layar</p>
                   <img
                     src={`${config.api_foto_dev}/${item.screen}`}
                     alt={`Kamera `}
                     className="mb-4 cursor-pointer"
-                    onClick={() =>
-                      openModal(
-                        `${config.api_foto_dev}/${item.screen}`,
-                        item.id_user,
-                        1
-                      )
-                    }
+                    onClick={() => openModal(item.id_user, 1)}
                   />
                 </div>
               </div>

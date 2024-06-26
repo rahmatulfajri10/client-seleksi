@@ -4,6 +4,7 @@ import QuizFrag from "../Fragments/QuizFrag";
 import { config } from "../../configs";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import Swal from "sweetalert2";
 
 const QuizLayout = (props) => {
   const videoRef = useRef(null);
@@ -139,6 +140,11 @@ const QuizLayout = (props) => {
         }, 5000);
       } catch (error) {
         console.error("Gagal meminta izin:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Izin akses ditolak atau tidak tersedia!",
+        });
         // Tangani kesalahan izin ditolak atau tidak tersedia
       }
     };

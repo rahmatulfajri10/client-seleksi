@@ -48,7 +48,9 @@ function SideBarDashboard() {
                   as={NavLink}
                   to="/"
                   icon={HiChartPie}
-                  activeClassName="active"
+                  className={({ isActive }) =>
+                    isActive ? "bg-blue-500 text-white" : "text-gray-700"
+                  }
                 >
                   Dashboard
                 </Sidebar.Item>
@@ -58,9 +60,21 @@ function SideBarDashboard() {
               Array.isArray(user.role) &&
               user.role.some((role) => usersRoles.includes(role)) && (
                 <Sidebar.Collapse href="#" icon={HiUsers} label="Users">
-                  <Sidebar.Item href="/users">List User</Sidebar.Item>
-                  <Sidebar.Item href="/add-user">Create One User</Sidebar.Item>
-                  <Sidebar.Item href="/bulk-add-user">
+                  <Sidebar.Item
+                    as={NavLink}
+                    to="/users"
+                    className={({ isActive }) =>
+                      isActive
+                        ? "bg-blue-500 text-white"
+                        : "text-gray-700 bg-blue-50"
+                    }
+                  >
+                    List User
+                  </Sidebar.Item>
+                  <Sidebar.Item as={NavLink} to="/add-user">
+                    Create One User
+                  </Sidebar.Item>
+                  <Sidebar.Item as={NavLink} to="/bulk-add-user">
                     Create Many Users
                   </Sidebar.Item>
                 </Sidebar.Collapse>
