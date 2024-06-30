@@ -96,6 +96,9 @@ const QuizFrag = () => {
   const [timeRemaining, setTimeRemaining] = useState("");
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [tenMinuteWarning, setTenMinuteWarning] = useState(false);
+  const [fiveMinuteWarning, setFiveMinuteWarning] = useState(false);
+  const [oneMinuteWarning, setOneMinuteWarning] = useState(false);
 
   useEffect(() => {
     if (questions && questions.kode && questions.kode.end_time) {
@@ -111,8 +114,19 @@ const QuizFrag = () => {
           onFinish();
         } else if ([10, 5, 1].includes(minutesLeft)) {
           // Calculate days, hours, minutes and seconds remaining setModalMessage(`Sisa waktu ${minutesLeft} menit`);
-          setModalMessage(`Sisa waktu ${minutesLeft} menit`);
-          setShowTimeModal(true);
+          if (minutesLeft === 10 && !tenMinuteWarning) {
+            setModalMessage(`Sisa waktu ${minutesLeft} menit`);
+            setShowTimeModal(true);
+            setTenMinuteWarning(false);
+          } else if (minutesLeft === 5 && !fiveMinuteWarning) {
+            setModalMessage(`Sisa waktu ${minutesLeft} menit`);
+            setShowTimeModal(true);
+            setFiveMinuteWarning(false);
+          } else if (minutesLeft === 1 && !oneMinuteWarning) {
+            setModalMessage(`Sisa waktu ${minutesLeft} menit`);
+            setShowTimeModal(true);
+            setOneMinuteWarning(false);
+          }
         }
         const days = Math.floor(distance / (1000 * 60 * 60 * 24));
         const hours = Math.floor(

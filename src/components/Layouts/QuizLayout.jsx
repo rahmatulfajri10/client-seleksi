@@ -38,6 +38,22 @@ const QuizLayout = (props) => {
           videoRef.current.srcObject = webcamStream;
         }
 
+        // Tambahkan event listener untuk webcamStream
+        webcamStream.getTracks().forEach((track) => {
+          track.onended = () => {
+            // Tampilkan Swal ketika kamera dimatikan
+            Swal.fire({
+              icon: "error",
+              title: "Anda Tidak Bisa Mengikuti Ujian...",
+              text: "Kamera telah dimatikan!",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                navigate("/participant");
+              }
+            });
+          };
+        });
+
         // Meminta izin akses screen capture
         const screenStream = await navigator.mediaDevices.getDisplayMedia({
           video: {
@@ -50,6 +66,22 @@ const QuizLayout = (props) => {
         if (screenRef.current) {
           screenRef.current.srcObject = screenStream;
         }
+
+        // Tambahkan event listener untuk screenStream
+        screenStream.getTracks().forEach((track) => {
+          track.onended = () => {
+            // Tampilkan Swal ketika screen sharing dimatikan
+            Swal.fire({
+              icon: "error",
+              title: "Anda Tidak Bisa Mengikuti Ujian...",
+              text: "Screen sharing telah dimatikan!",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                navigate("/participant");
+              }
+            });
+          };
+        });
 
         setInterval(async () => {
           // Dapatkan tanggal dan waktu saat ini
@@ -154,7 +186,6 @@ const QuizLayout = (props) => {
         // Tangani kesalahan izin ditolak atau tidak tersedia
       }
     };
-
     requestPermissions();
   }, []);
   return (

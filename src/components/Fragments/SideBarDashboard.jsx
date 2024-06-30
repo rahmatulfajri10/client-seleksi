@@ -11,13 +11,19 @@ import { useDispatch } from "react-redux";
 import { LogOut, getMe, reset } from "../../features/authslice";
 import { useSelector } from "react-redux";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function SideBarDashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isError, user } = useSelector((state) => state.auth);
+  const [currentPage, setCurrentPage] = useState("");
 
+  useEffect(() => {
+    const newPage = window.location.pathname;
+
+    setCurrentPage(newPage);
+  }, [setCurrentPage]);
   useEffect(() => {
     dispatch(getMe());
   }, [dispatch]);
@@ -48,9 +54,7 @@ function SideBarDashboard() {
                   as={NavLink}
                   to="/"
                   icon={HiChartPie}
-                  className={({ isActive }) =>
-                    isActive ? "bg-blue-500 text-white" : "text-gray-700"
-                  }
+                  className={"/" === currentPage ? "bg-gray-300" : ""}
                 >
                   Dashboard
                 </Sidebar.Item>
@@ -59,22 +63,28 @@ function SideBarDashboard() {
             {user &&
               Array.isArray(user.role) &&
               user.role.some((role) => usersRoles.includes(role)) && (
-                <Sidebar.Collapse href="#" icon={HiUsers} label="Users">
+                <Sidebar.Collapse href="#" icon={HiUsers} label="Users" active>
                   <Sidebar.Item
                     as={NavLink}
                     to="/users"
-                    className={({ isActive }) =>
-                      isActive
-                        ? "bg-blue-500 text-white"
-                        : "text-gray-700 bg-blue-50"
-                    }
+                    className={"/users" === currentPage ? "bg-gray-300" : ""}
                   >
                     List User
                   </Sidebar.Item>
-                  <Sidebar.Item as={NavLink} to="/add-user">
+                  <Sidebar.Item
+                    as={NavLink}
+                    to="/add-user"
+                    className={"/add-user" === currentPage ? "bg-gray-300" : ""}
+                  >
                     Create One User
                   </Sidebar.Item>
-                  <Sidebar.Item as={NavLink} to="/bulk-add-user">
+                  <Sidebar.Item
+                    as={NavLink}
+                    to="/bulk-add-user"
+                    className={
+                      "/bulk-add-user" === currentPage ? "bg-gray-300" : ""
+                    }
+                  >
                     Create Many Users
                   </Sidebar.Item>
                 </Sidebar.Collapse>
@@ -84,21 +94,41 @@ function SideBarDashboard() {
               Array.isArray(user.role) &&
               user.role.some((role) => ujianRoles.includes(role)) && (
                 <Sidebar.Collapse icon={HiClipboardCheck} label="Ujian">
-                  <Sidebar.Item href="/ujian">List Ujian</Sidebar.Item>
-                  <Sidebar.Item href="/add-ujian">Tambah Ujian</Sidebar.Item>
+                  <Sidebar.Item
+                    href="/ujian"
+                    className={"/ujian" === currentPage ? "bg-gray-300" : ""}
+                  >
+                    List Ujian
+                  </Sidebar.Item>
+                  <Sidebar.Item
+                    href="/add-ujian"
+                    className={
+                      "/add-ujian" === currentPage ? "bg-gray-300" : ""
+                    }
+                  >
+                    Tambah Ujian
+                  </Sidebar.Item>
                 </Sidebar.Collapse>
               )}
             {user &&
               Array.isArray(user.role) &&
               user.role.some((role) => resultRoles.includes(role)) && (
-                <Sidebar.Item href="/result" icon={HiChartBar}>
+                <Sidebar.Item
+                  href="/result"
+                  icon={HiChartBar}
+                  className={"/result" === currentPage ? "bg-gray-300" : ""}
+                >
                   Result
                 </Sidebar.Item>
               )}
             {user &&
               Array.isArray(user.role) &&
               user.role.some((role) => proctorRoles.includes(role)) && (
-                <Sidebar.Item href="/proctor" icon={HiVideoCamera}>
+                <Sidebar.Item
+                  href="/proctor"
+                  icon={HiVideoCamera}
+                  className={"/proctor" === currentPage ? "bg-gray-300" : ""}
+                >
                   Proctor
                 </Sidebar.Item>
               )}
