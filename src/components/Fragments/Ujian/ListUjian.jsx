@@ -8,6 +8,7 @@ import {
   Table,
   TextInput,
   Dropdown,
+  Pagination,
 } from "flowbite-react";
 import { useEffect, useState } from "react";
 
@@ -180,6 +181,31 @@ const ListUjianFragment = () => {
     setDurasi("");
     setFile(null);
   };
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentItems, setCurrentItems] = useState(0);
+
+  function onPageChange(newPage) {
+    // Pseudocode
+    // 1. Periksa apakah newPage valid dan tidak melebihi totalPages
+    if (newPage > 0 && newPage <= totalPages) {
+      // 2. Perbarui state currentPage dengan newPage
+      setCurrentPage(newPage);
+      // 3. Opsional: Muat data untuk halaman baru jika diperlukan
+      loadDataForPage(newPage);
+    }
+  }
+  useEffect(() => {
+    if (Array.isArray(examData) && examData.length > 0) {
+      const indexOfLastItem = currentPage * itemsPerPage;
+      const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+      // Correctly calculate and set the current items to be displayed
+      setCurrentItems(examData.slice(indexOfFirstItem, indexOfLastItem));
+      // Use a separate state for currentItems if needed, or directly use currentItems within this useEffect
+      setTotalPages(Math.ceil(examData.length / itemsPerPage));
+    }
+  }, [examData, currentPage, itemsPerPage]);
 
   return (
     <>
@@ -300,6 +326,7 @@ const ListUjianFragment = () => {
         <div className="overflow-x-auto">
           <Table>
             <Table.Head>
+              <Table.HeadCell>No</Table.HeadCell>
               <Table.HeadCell>Status</Table.HeadCell>
               <Table.HeadCell>Nama</Table.HeadCell>
               <Table.HeadCell>Kode Soal</Table.HeadCell>
@@ -317,12 +344,13 @@ const ListUjianFragment = () => {
               </Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
-              {Array.isArray(examData) ? (
-                examData.map((exam) => (
+              {Array.isArray(currentItems) && currentItems.length > 0 ? (
+                currentItems.map((exam, index) => (
                   <Table.Row
                     key={exam.id}
                     className="bg-white dark:border-gray-700 dark:bg-gray-800"
                   >
+                    <Table.Cell>{index + 1}</Table.Cell>
                     <Table.Cell>
                       {exam.active === 1 ? "Aktif" : "Tidak Aktif"}
                     </Table.Cell>
@@ -418,6 +446,14 @@ const ListUjianFragment = () => {
               )}
             </Table.Body>
           </Table>
+          <Pagination
+            className="m-5 items-center justify-center"
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+            showIcons
+            layout="table"
+          />
         </div>
       </div>
     </>

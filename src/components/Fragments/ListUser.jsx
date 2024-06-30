@@ -7,6 +7,7 @@ import {
   Table,
   TextInput,
   Dropdown,
+  Pagination,
 } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -325,6 +326,31 @@ const ListUserFragment = () => {
     setActive(false);
     setRole("");
   };
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentItems, setCurrentItems] = useState(0);
+
+  function onPageChange(newPage) {
+    // Pseudocode
+    // 1. Periksa apakah newPage valid dan tidak melebihi totalPages
+    if (newPage > 0 && newPage <= totalPages) {
+      // 2. Perbarui state currentPage dengan newPage
+      setCurrentPage(newPage);
+      // 3. Opsional: Muat data untuk halaman baru jika diperlukan
+      loadDataForPage(newPage);
+    }
+  }
+  useEffect(() => {
+    if (Array.isArray(userData) && userData.length > 0) {
+      const indexOfLastItem = currentPage * itemsPerPage;
+      const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+      // Correctly calculate and set the current items to be displayed
+      setCurrentItems(userData.slice(indexOfFirstItem, indexOfLastItem));
+      // Use a separate state for currentItems if needed, or directly use currentItems within this useEffect
+      setTotalPages(Math.ceil(userData.length / itemsPerPage));
+    }
+  }, [userData, currentPage, itemsPerPage]);
 
   return (
     <>
@@ -439,9 +465,10 @@ const ListUserFragment = () => {
         <div className="flex justify-center mb-5">
           <h1 className="text-2xl font-bold">Manajemen User</h1>
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto flex flex-col">
           <Table>
             <Table.Head>
+              <Table.HeadCell>No</Table.HeadCell>
               <Table.HeadCell>Username</Table.HeadCell>
               <Table.HeadCell>Status</Table.HeadCell>
               <Table.HeadCell>Role</Table.HeadCell>
@@ -451,12 +478,13 @@ const ListUserFragment = () => {
               </Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
-              {Array.isArray(userData) ? (
-                userData.map((user) => (
+              {Array.isArray(currentItems) && currentItems.length > 0 ? (
+                currentItems.map((user, index) => (
                   <Table.Row
                     key={user.id}
                     className="bg-white dark:border-gray-700 dark:bg-gray-800"
                   >
+                    <Table.Cell>{index + 1}</Table.Cell>
                     <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                       {user.username}
                     </Table.Cell>
@@ -515,6 +543,14 @@ const ListUserFragment = () => {
               )}
             </Table.Body>
           </Table>
+          <Pagination
+            layout="table"
+            className="mt-5 items-center justify-center"
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+            showIcons
+          />
         </div>
       </div>
     </>

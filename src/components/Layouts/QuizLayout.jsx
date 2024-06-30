@@ -5,11 +5,13 @@ import { config } from "../../configs";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const QuizLayout = (props) => {
   const videoRef = useRef(null);
   const screenRef = useRef(null);
   const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
   const canvasRef = useRef(document.createElement("canvas"));
   // Ubah base64 ke Blob
@@ -142,8 +144,12 @@ const QuizLayout = (props) => {
         console.error("Gagal meminta izin:", error);
         Swal.fire({
           icon: "error",
-          title: "Oops...",
-          text: "Izin akses ditolak atau tidak tersedia!",
+          title: "Anda Tidak Bisa Mengikuti Ujian...",
+          text: "Izin akses ditolak atau tidak tersedia! ",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/participant");
+          }
         });
         // Tangani kesalahan izin ditolak atau tidak tersedia
       }

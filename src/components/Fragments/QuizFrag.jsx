@@ -93,19 +93,78 @@ const QuizFrag = () => {
       navigate("/participant");
     }
   }
+  const [timeRemaining, setTimeRemaining] = useState("");
+  const [showTimeModal, setShowTimeModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
+  useEffect(() => {
+    if (questions && questions.kode && questions.kode.end_time) {
+      const endTime = new Date(questions.kode.end_time).getTime();
+
+      const timer = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = endTime - now;
+        const minutesLeft = Math.floor(distance / (1000 * 60));
+
+        if (distance < 0) {
+          clearInterval(timer);
+          onFinish();
+        } else if ([10, 5, 1].includes(minutesLeft)) {
+          // Calculate days, hours, minutes and seconds remaining setModalMessage(`Sisa waktu ${minutesLeft} menit`);
+          setModalMessage(`Sisa waktu ${minutesLeft} menit`);
+          setShowTimeModal(true);
+        }
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        // Update the state with the new time
+        setTimeRemaining(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+      }, 1000);
+
+      // Cleanup function to clear the interval
+      return () => clearInterval(timer);
+    }
+  }, [questions]);
+  const TimeWarningModal = () => (
+    <Modal show={showTimeModal} onClose={() => setShowTimeModal(false)}>
+      <Modal.Header />
+      <Modal.Body>
+        <div className="text-center">
+          <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+          <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+            {modalMessage}
+          </h3>
+          <div className="flex justify-center gap-4">
+            <Button color="gray" onClick={() => setShowTimeModal(false)}>
+              OK
+            </Button>
+          </div>
+        </div>
+      </Modal.Body>
+    </Modal>
+  );
   return (
     <>
       <div className="m-10 grid grid-cols-4 gap-4">
         <div className=" border">
           <div className="flex flex-col ">
-            <div className="flex justify-center my-5">
+            <div className="flex flex-col justify-center items-center my-5">
+              <div>Sisa Waktu Ujian</div>
+              <div>{timeRemaining}</div>
               <h2 className="text-xl">{questions && questions.kd_soal}</h2>
             </div>
             <div className="grid grid-cols-5 gap-2">
               {Array.isArray(allSoal) &&
                 allSoal.map((question, index) => (
                   <div key={index} className="">
-                    <Button onClick={() => onNumber(index + 1)} color="blue">
+                    <Button
+                      onClick={() => onNumber(index + 1)}
+                      color={index === trace ? "green" : "blue"}
+                    >
                       {index + 1}
                     </Button>
                   </div>
@@ -145,13 +204,21 @@ const QuizFrag = () => {
                 ))}
               </ul>
               <div className="flex justify-center space-x-4 m-5">
-                <Button onClick={() => onPrev()} color="light">
+                <Button
+                  onClick={() => onPrev()}
+                  color="light"
+                  disabled={trace === 0}
+                >
                   Prev
                 </Button>
                 <Button color="success" onClick={() => setOpenModal(true)}>
                   Finish
                 </Button>
-                <Button onClick={onNext} color="light">
+                <Button
+                  onClick={onNext}
+                  color="light"
+                  disabled={trace === allSoal.length - 1}
+                >
                   Next
                 </Button>
               </div>
@@ -183,6 +250,7 @@ const QuizFrag = () => {
           </div>
         </Modal.Body>
       </Modal>
+      <TimeWarningModal />
     </>
   );
 };
